@@ -1,33 +1,21 @@
-name: Web to APK
+name: Flutter Build APK
 on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: subosito/flutter-action@v2
         with:
-          node-version: '20'
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Prepare Web Assets and Build APK
-        run: |
-          mkdir -p www
-          for f in *; do
-            if [ "$f" != "www" ] && [ "$f" != ".github" ] && [ "$f" != "node_modules" ] && [ "$f" != "android" ]; then
-              mv "$f" www/ 2>/dev/null || true
-            fi
-          done
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "MyApp" "com.example.myapp" --web-dir=www
-          npx cap add android
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          flutter-version: 'stable'
+          channel: 'stable'
+      - run: |
+          if [ ! -d "android" ]; then
+            flutter create .
+          fi
+          flutter pub get
+          flutter build apk --debug
       - uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: flutter-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
