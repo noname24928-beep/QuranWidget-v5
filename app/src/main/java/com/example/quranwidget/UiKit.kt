@@ -281,11 +281,7 @@ fun View.round(radiusDp: Int) {
     clipToOutline = true
 }
 
-/** بطاقة بخلفية مزخرفة وحدود ذهبية */
-fun Context.card(pad: Int = 16): LinearLayout = vbox(pad).apply {
-    background = Art.cardBg(this@card)
-    elevation = dp(2).toFloat()
-}
+
 
 fun Context.sectionTitle(text: String) = tv(text, 21f, "#0B3D2E", true)
 
