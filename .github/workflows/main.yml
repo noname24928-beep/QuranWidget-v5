@@ -1,4 +1,4 @@
-name: Flutter Build APK
+name: Build QuranWidget APK
 on: [push, workflow_dispatch]
 jobs:
   build:
@@ -9,17 +9,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Install Flutter and Build APK
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Generate Wrapper and Build Debug APK
         run: |
-          git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-          export PATH="$PATH:$HOME/flutter/bin"
-          flutter precache --android
-          if [ ! -d "android" ]; then
-            flutter create .
+          if [ ! -f "./gradlew" ]; then
+            gradle wrapper --gradle-version 8.7 --distribution-type bin
           fi
-          flutter pub get
-          flutter build apk --debug
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: flutter-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: QuranWidget-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
